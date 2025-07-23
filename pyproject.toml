@@ -1,6 +1,6 @@
 [project]
-name = "phis-life-advice"
-version = "2025.7.23.3"
+name = "phis-lifestyle-advice"
+version = "2025.7.23.4"
 description = "慢病随访新建-生活建议 (please install the new phis_lifestyle_advice package)"
 readme = "README.md"
 requires-python = ">=3.12"
