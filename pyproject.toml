@@ -1,6 +1,6 @@
 [project]
 name = "phis-lifestyle-advice"
-version = "2025.7.23.5"
+version = "2025.7.23.6"
 description = "慢病随访新建-生活建议"
 readme = "README.md"
 requires-python = ">=3.12"
