@@ -1,120 +1,65 @@
-import random
+def generate_life_advice(new_sf_data, mb_group, bmi, xb):
+    # 生活指导建议项
+    advice_items = []
+    # 戒烟建议（增加具体替代方案）
+    if new_sf_data['日吸烟量'] != 0:
+        advice_items.append(
+            '建议采用"5D戒烟法"：Delay（延迟吸烟）、Deep breathing（深呼吸）、Drink water（喝水）、Do something（转移注意）、Discuss（寻求支持）')
 
-# 重构建议池：每条建议都标记适用的疾病类型
-advice_pool = [
-    # 核心监测建议（根据疾病类型自动选择）
-    {
-        "condition": ("高血压", "糖尿病"),
-        "advice": "定期监测血压、血糖、足背动脉;"
-    },
-    {
-        "condition": ("高血压",),
-        "advice": "定期监测血压、足背动脉;"
-    },
-    {
-        "condition": ("糖尿病",),
-        "advice": "定期监测血糖、足背动脉;"
-    },
+    # 控制饮酒（细化酒精换算）
+    if new_sf_data['日饮酒量'] != 0:
+        alcohol_advice = {
+            '男': '建议控制饮酒量（25克酒精≈啤酒750ml/葡萄酒250ml/白酒75ml），避免混合饮酒',
+            '女': '建议控制饮酒量（15克酒精≈啤酒450ml/葡萄酒150ml/白酒50ml），经期孕期禁酒'
+        }
+        advice_items.append(alcohol_advice.get(xb, '建议减少酒精摄入'))
 
-    # 核心通用建议（所有患者都适用）
-    {"condition": ("通用",), "advice": "严格遵医嘱用药，注意药物剂量、用法、时间，勿自行更改或停药;"},
-    {"condition": ("通用",), "advice": "低盐低脂饮食，每日食盐摄入量不超过5克;"},
-    {"condition": ("通用",), "advice": "避免被动吸烟;"},
-    {"condition": ("通用",), "advice": "保证7-8小时优质睡眠，避免熬夜;"},
+    # 饮食调节（增加具体营养素建议）
+    if '无偏好' not in mb_group:
+        advice_items.extend([
+            '饮食建议：每日盐摄入<5g，烹调油25-30g',
+            '优质蛋白选择：鱼虾禽类＞畜肉，每周至少2次深海鱼',
+            '膳食纤维摄入：每日25-30g（如燕麦、杂豆、绿叶菜）',
+            '烹饪方式建议：蒸煮炖优于煎炸烤'
+        ])
 
-    # 糖尿病专用建议
-    {"condition": ("糖尿病",), "advice": "每日监测晨起空腹血糖;"},
-    {"condition": ("糖尿病",), "advice": "学习低血糖识别与处理，随身携带糖果;"},
-    {"condition": ("糖尿病",), "advice": "每年至少1次眼底检查、肾功能检查;"},
-    {"condition": ("糖尿病",), "advice": "足部每日检查，预防糖尿病足;"},
-    {"condition": ("糖尿病",), "advice": "限制精制碳水摄入，增加全谷物比例;"},
-    {"condition": ("糖尿病",), "advice": "学习食物升糖指数(GI)概念;"},
-    {"condition": ("糖尿病",), "advice": "控制餐后2小时血糖在10mmol/L以下;"},
-    {"condition": ("糖尿病",), "advice": "记录血糖监测日记;"},
+    # 运动建议（增加运动类型指导）
+    if '残疾人' not in mb_group:
+        if new_sf_data['运动时间'] == 0:
+            advice_items.append('运动建议：从每天10分钟快走开始，每周递增5分钟')
+        elif bmi >= 24:
+            advice_items.extend([
+                '有氧运动：每周5次，每次30分钟（快走、游泳、骑行）',
+                '抗阻训练：每周2-3次（弹力带、深蹲）',
+                '核心训练：每天5分钟平板支撑'
+            ])
 
-    # 高血压专用建议
-    {"condition": ("高血压",), "advice": "每日监测晨起空腹血压;"},
-    {"condition": ("高血压",), "advice": "保持情绪稳定，避免情绪剧烈波动;"},
-    {"condition": ("高血压",), "advice": "冬季注意保暖，避免寒冷刺激;"},
-    {"condition": ("高血压",), "advice": "收缩压控制在130mmHg以下;"},
-    {"condition": ("高血压",), "advice": "记录血压监测日记;"},
+    # 老年人专项（增加具体措施）
+    if '老年人' in mb_group:
+        advice_items.extend([
+            '防跌倒措施：居家安装扶手，穿防滑鞋',
+            '骨质疏松预防：每日钙摄入1000-1200mg+维生素D800IU',
+            '认知训练：每日脑力活动（阅读、棋牌）30分钟'
+        ])
 
-    # 通用扩展建议
-    {"condition": ("通用",), "advice": "烹饪使用植物油，避免动物油脂;"},
-    {"condition": ("通用",), "advice": "外出携带疾病卡片和应急药物;"},
-    {"condition": ("通用",), "advice": "避免长时间静坐，每小时活动5分钟;"},
-    {"condition": ("通用",), "advice": "出现头晕、心悸、视物模糊立即就医;"},
-    {"condition": ("通用",), "advice": "定期进行心血管风险评估;"},
-    {"condition": ("通用",), "advice": "流感季节前接种疫苗;"},
+    # 新增健康管理模块
+    advice_items.extend([
+        '睡眠管理：保证7-8小时/天，避免睡前使用电子设备',
+        '心理调节：每日正念冥想10分钟',
+        '环境健康：室内PM2.5＜37μg/m³，湿度40%-60%'
+    ])
 
-    # 结尾建议（所有患者都适用）
-    {"condition": ("通用",), "advice": "预防并发症，如有不适立即就医，定期复诊;"},
-    {"condition": ("通用",), "advice": "若控制不佳或出现异常，建议上级医院就诊"}
-]
+    # 用药指导（增加具体注意事项）
+    advice_items.append('用药管理：使用分药盒，设置服药提醒，注意药物相互作用（如阿司匹林与酒精）')
 
+    # 卫生防疫（增加具体标准）
+    advice_items.extend([
+        '手卫生：七步洗手法，接触公共物品后及时消毒',
+        '呼吸道防护：N95口罩每4小时更换',
+        '环境通风：每日开窗3次，每次＞30分钟'
+    ])
 
-def generate_doctor_advice(mb_type):
-    """根据疾病类型生成针对性的医生建议组合"""
-    advice_list = []
+    # 生成最终生活指导建议
+    life_suggestions = '\n'.join([f'{i + 1}. {item}' for i, item in enumerate(advice_items)])
 
-    # 1. 添加监测建议（根据疾病类型）
-    for item in advice_pool:
-        if isinstance(item, dict) and all(disease in mb_type for disease in item["condition"]):
-            advice_list.append(item["advice"])
-            break
-
-    # 2. 添加核心通用建议（必选）
-    core_advices = [item["advice"] for item in advice_pool
-                    if isinstance(item, dict) and "通用" in item["condition"] and "建议" not in item["advice"]]
-    # 确保核心建议按顺序添加
-    core_advices = core_advices[:4]  # 取前4条核心通用建议
-    advice_list.extend(core_advices)
-
-    # 3. 根据疾病类型筛选相关建议
-    disease_specific = []
-    general_advices = []
-
-    for item in advice_pool:
-        if not isinstance(item, dict):
-            continue
-
-        # 跳过已经添加的核心建议
-        if item["advice"] in advice_list:
-            continue
-
-        # 收集特定疾病建议
-        if "通用" not in item["condition"]:
-            if all(disease in mb_type for disease in item["condition"]):
-                disease_specific.append(item["advice"])
-
-        # 收集通用建议
-        elif "通用" in item["condition"]:
-            general_advices.append(item["advice"])
-
-    # 4. 添加疾病特定建议（优先）
-    # 根据疾病数量决定添加数量：单病种2-4条，双病种4-6条
-    num_disease = len(mb_type)
-    num_to_add = random.randint(2, 4) if num_disease == 1 else random.randint(4, 6)
-
-    if len(disease_specific) > num_to_add:
-        advice_list.extend(random.sample(disease_specific, num_to_add))
-    else:
-        advice_list.extend(disease_specific)
-
-    # 5. 添加通用建议（补充）
-    remaining = 15 - len(advice_list)  # 目标总建议数约15条
-    if remaining > 0 and general_advices:
-        num_general = min(remaining, random.randint(3, 5), len(general_advices))
-        advice_list.extend(random.sample(general_advices, num_general))
-
-    # 6. 添加结尾建议
-    ending_advices = [item["advice"] for item in advice_pool
-                      if isinstance(item, dict) and "建议" in item["advice"]]
-    advice_list.extend(ending_advices)
-
-    # 7. 重新编号并组合
-    renumbered_advice = ""
-    for i, advice in enumerate(advice_list, 1):
-        renumbered_advice += f"{i}.{advice}\n"
-
-    return renumbered_advice
+    return life_suggestions
