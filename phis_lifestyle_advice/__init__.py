@@ -33,6 +33,16 @@ def generate_lifestyle_advice(new_sf_data, mb_group, bmi, xb):
                 '抗阻训练：每周2-3次（弹力带、深蹲）',
                 '核心训练：每天5分钟平板支撑'
             ])
+    waist = new_sf_data['腰围']
+    idf = False
+    if xb == '女':
+        if waist >= 85:
+            idf = True
+    elif xb == '男':
+        if waist >= 90:
+            idf = True
+    if idf:
+        advice_items.append('通过健康饮食和规律运动，减小腰围')
 
     # 老年人专项（增加具体措施）
     if '老年人' in mb_group:
