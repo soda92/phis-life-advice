@@ -1,4 +1,4 @@
-def generate_life_advice(new_sf_data, mb_group, bmi, xb):
+def generate_lifestyle_advice(new_sf_data, mb_group, bmi, xb):
     # 生活指导建议项
     advice_items = []
     # 戒烟建议（增加具体替代方案）

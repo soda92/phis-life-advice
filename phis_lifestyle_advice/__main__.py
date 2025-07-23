@@ -1,4 +1,4 @@
-from phis_life_advice import generate_life_advice
+from phis_lifestyle_advice import generate_lifestyle_advice
 
 if __name__ == '__main__':
     # 示例
@@ -7,5 +7,5 @@ if __name__ == '__main__':
     mb_type = ['高血压']
     bmi = 25
     xb = '男'
-    advice = generate_life_advice(new_sf_data, mb_group, bmi, xb)
+    advice = generate_lifestyle_advice(new_sf_data, mb_group, bmi, xb)
     print(advice)
